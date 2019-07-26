@@ -4,8 +4,8 @@ import logoImg from "./assets/logo.png";
 const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
-  width: 800,
-  height: 600,
+  width: 1100,
+  height: 800,
   scene: {
     preload: preload,
     create: create
@@ -19,7 +19,7 @@ function preload() {
 }
 
 function create() {
-  const logo = this.add.image(400, 150, "logo");
+  const logo = this.add.image(550, 150, "logo");
 
   this.tweens.add({
     targets: logo,
