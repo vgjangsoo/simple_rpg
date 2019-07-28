@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
 import mapTileset from "./assets/map-tileset.png";
-import oratio from "./assets/Oratio-the-Mercenary.png";
+import character from "./assets/light.png";
 import attack from "./assets/attack.png";
 
 const config = {
@@ -31,11 +31,12 @@ const game = new Phaser.Game(config);
 
 function preload() {
   this.load.image("map-tiles", mapTileset);
-  this.load.spritesheet("oratio", oratio, { frameWidth: 73, frameHeight: 73 });
+  this.load.spritesheet("character", character, { frameWidth: 64, frameHeight: 64 });
   this.load.spritesheet("attack", attack, { frameWidth: 192, frameHeight: 192 });
 }
 
 function create() {
+  // Map tiles.
   const level = [
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
     [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
@@ -65,50 +66,73 @@ function create() {
 
   ];
 
+  // Map and layer
   const map = this.make.tilemap({data: level, tileWidth: 50, tilesHeight: 50});
   const tiles = map.addTilesetImage('map-tiles');
   const layer = map.createStaticLayer(0, tiles, 0, 0);
 
-
-  player = this.physics.add.sprite(config.width / 2, config.height / 2, 'oratio');
-  player.setScale(1.3);
+  // player
+  player = this.physics.add.sprite(config.width / 2, config.height / 2, 'character').setFrame(134);
+  player.setScale(1.7);
   player.setCollideWorldBounds(true);
-  player.depth = 1;
 
   this.anims.create({
-    key: 'standBy',
-    frames: this.anims.generateFrameNumbers('oratio', { start: 1, end: 1 }),
-    frameRate: 20
-  })
+    key: 'up',
+    frames: this.anims.generateFrameNumbers('character', { frames: [104, 105, 106, 107, 108, 109, 110, 111, 112, 104] }),
+    frameRate: 30,
+    repeat: 0
+  });
 
   this.anims.create({
     key: 'down',
-    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 0, 1, 2, 1] }),
-    frameRate: 10,
+    frames: this.anims.generateFrameNumbers('character', { frames: [130, 131, 132, 133, 134, 135, 136, 137, 138, 130] }),
+    frameRate: 30,
     repeat: 0
   });
 
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 11, 12, 13, 12] }),
-    frameRate: 10,
+    frames: this.anims.generateFrameNumbers('character', { frames: [117, 118, 119, 120, 121, 122, 123, 124, 125, 117] }),
+    frameRate: 30,
     repeat: 0
   });
 
   this.anims.create({
       key: 'right',
-      frames: this.anims.generateFrameNumbers('oratio', { frames: [ 22, 23, 24, 23] }),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers('character', { frames: [143, 144, 145, 146, 147, 148, 149, 150, 151, 143] }),
+      frameRate: 30,
       repeat: 0
   });
 
   this.anims.create({
-    key: 'up',
-    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 33, 34, 35, 34] }),
-    frameRate: 10,
+    key: "attack-up",
+    frames: this.anims.generateFrameNumbers('character', { frames: [156, 157, 158, 159, 160, 161, 156] }),
+    frameRate: 30,
     repeat: 0
-  });
+  })
 
+  this.anims.create({
+    key: "attack-down",
+    frames: this.anims.generateFrameNumbers('character', { frames: [182, 183, 184, 185, 186, 187, 182] }),
+    frameRate: 30,
+    repeat: 0
+  })
+
+  this.anims.create({
+    key: "attack-left",
+    frames: this.anims.generateFrameNumbers('character', { frames: [169, 170, 171, 172, 173, 174, 169] }),
+    frameRate: 30,
+    repeat: 0
+  })
+
+  this.anims.create({
+    key: "attack-right",
+    frames: this.anims.generateFrameNumbers('character', { frames: [195, 196, 197, 198, 199, 200, 195] }),
+    frameRate: 30,
+    repeat: 0
+  })
+
+  // punch attack
   punch = this.physics.add.sprite(player.x + 10, player.y + 50, 'attack');
   punch.setScale(0.7);
   punch.visible = false;
@@ -116,10 +140,11 @@ function create() {
   this.anims.create({
     key: 'punch',
     frames : this.anims.generateFrameNumbers('attack', { start: 0, end: 11 }),
-    frameRate: 30,
+    frameRate: 40,
     repeat:0
   });
 
+  // Key input
   cursors = this.input.keyboard.createCursorKeys();
   spaceBar = this.input.keyboard.addKey('SPACE');
 }
@@ -139,7 +164,7 @@ function update() {
     player.anims.play('down', true);
   }
 
-  if (cursors.left.isDown) {
+  else if (cursors.left.isDown) {
     player.x += -4;
     punch.y = player.y;
     punch.x = player.x - 60;
