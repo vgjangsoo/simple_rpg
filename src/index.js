@@ -2,11 +2,19 @@ import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
 import mapTileset from "./assets/map-tileset.png";
 import oratio from "./assets/Oratio-the-Mercenary.png";
+import attack from "./assets/attack.png";
 
 const config = {
   type: Phaser.AUTO,
   width: 1100,
   height: 800,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: 0,
+      debug: false
+    }
+  },
   scene: {
     preload: preload,
     create: create,
@@ -15,96 +23,134 @@ const config = {
 };
 
 let cursors;
+let player;
+let punch;
+let spaceBar;
 
 const game = new Phaser.Game(config);
 
 function preload() {
-  this.load.image("logo", logoImg);
   this.load.image("map-tiles", mapTileset);
-  this.load.spritesheet('oratio', oratio, { frameWidth: 73, frameHeight: 73 });
+  this.load.spritesheet("oratio", oratio, { frameWidth: 73, frameHeight: 73 });
+  this.load.spritesheet("attack", attack, { frameWidth: 192, frameHeight: 192 });
 }
 
 function create() {
   const level = [
-    [  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21 ],
-    [  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  2,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  3,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  5,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  6,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  7,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  8,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [  9,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 12,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 13,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 14,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 15,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 16,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 17,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 18,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 19,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 20,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 21,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 22,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 23,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
-    [ 24,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
+    [  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0 ],
 
   ];
-  const logo = this.add.image(550, 150, "logo");
-  logo.depth = 1;
 
   const map = this.make.tilemap({data: level, tileWidth: 50, tilesHeight: 50});
   const tiles = map.addTilesetImage('map-tiles');
   const layer = map.createStaticLayer(0, tiles, 0, 0);
 
-  this.tweens.add({
-    targets: logo,
-    y: 450,
-    duration: 2000,
-    ease: "Power2",
-    yoyo: true,
-    loop: -1
-  });
 
-  let player = this.add.sprite(200, 450, 'oratio');
+  player = this.physics.add.sprite(config.width / 2, config.height / 2, 'oratio');
+  player.setScale(1.3);
+  player.setCollideWorldBounds(true);
+
+  this.anims.create({
+    key: 'standBy',
+    frames: this.anims.generateFrameNumbers('oratio', { start: 1, end: 1 }),
+    frameRate: 20
+  })
 
   this.anims.create({
     key: 'down',
-    frames: this.anims.generateFrameNumbers('oratio', { start: 0, end: 2 }),
+    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 0, 1, 2, 1] }),
     frameRate: 10,
-    repeat: -1
+    repeat: 0
   });
 
   this.anims.create({
     key: 'left',
-    frames: this.anims.generateFrameNumbers('oratio', { start: 11, end: 13 }),
+    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 11, 12, 13, 12] }),
     frameRate: 10,
-    repeat: -1
+    repeat: 0
   });
 
   this.anims.create({
       key: 'right',
-      frames: this.anims.generateFrameNumbers('oratio', { start: 22, end: 24 }),
+      frames: this.anims.generateFrameNumbers('oratio', { frames: [ 22, 23, 24, 23] }),
       frameRate: 10,
-      repeat: -1
+      repeat: 0
   });
 
   this.anims.create({
     key: 'up',
-    frames: this.anims.generateFrameNumbers('oratio', { start: 33, end: 35 }),
+    frames: this.anims.generateFrameNumbers('oratio', { frames: [ 33, 34, 35, 34] }),
     frameRate: 10,
-    repeat: -1
+    repeat: 0
+  });
+
+  punch = this.physics.add.sprite(player.x + 10, player.y + 50, 'attack');
+  punch.setScale(0.7);
+  
+  this.anims.create({
+    key: 'punch',
+    frames : this.anims.generateFrameNumbers('attack', { start: 0, end: 11 }),
+    frameRate: 20,
+    repeat:0
   });
 
   cursors = this.input.keyboard.createCursorKeys();
+  spaceBar = this.input.keyboard.addKey('SPACE');
 }
 
 function update() {
-  // if (cursors.left.isDown) {
-  //   player.setVelocityX(-160);
-  //   player.play('left', true);
-  // }
+  if (cursors.up.isDown) {
+    player.y += -4;
+    punch.y += -4;
+    player.anims.play('up', true);
+  }
+
+  else if (cursors.down.isDown) {
+    player.y += 4;
+    punch.y += 4;
+    player.anims.play('down', true);
+  }
+
+  if (cursors.left.isDown) {
+    player.x += -4;
+    player.anims.play('left', true);
+  }
+
+  else if (cursors.right.isDown) {
+    player.x += 4;
+    player.anims.play('right', true);
+  }
+
+  else {
+    player.setVelocity(0);
+    player.anims.pause();
+  }
+
+  if (spaceBar.isDown) {
+    punch.anims.play('punch', true);
+  }
 }
