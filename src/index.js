@@ -73,6 +73,7 @@ function create() {
   player = this.physics.add.sprite(config.width / 2, config.height / 2, 'oratio');
   player.setScale(1.3);
   player.setCollideWorldBounds(true);
+  player.depth = 1;
 
   this.anims.create({
     key: 'standBy',
@@ -110,11 +111,12 @@ function create() {
 
   punch = this.physics.add.sprite(player.x + 10, player.y + 50, 'attack');
   punch.setScale(0.7);
+  punch.visible = false;
   
   this.anims.create({
     key: 'punch',
     frames : this.anims.generateFrameNumbers('attack', { start: 0, end: 11 }),
-    frameRate: 20,
+    frameRate: 30,
     repeat:0
   });
 
@@ -125,23 +127,29 @@ function create() {
 function update() {
   if (cursors.up.isDown) {
     player.y += -4;
-    punch.y += -4;
+    punch.x = player.x;
+    punch.y = player.y - 60;
     player.anims.play('up', true);
   }
 
   else if (cursors.down.isDown) {
     player.y += 4;
-    punch.y += 4;
+    punch.x = player.x;
+    punch.y = player.y + 60;
     player.anims.play('down', true);
   }
 
   if (cursors.left.isDown) {
     player.x += -4;
+    punch.y = player.y;
+    punch.x = player.x - 60;
     player.anims.play('left', true);
   }
 
   else if (cursors.right.isDown) {
     player.x += 4;
+    punch.y = player.y;
+    punch.x = player.x + 60;
     player.anims.play('right', true);
   }
 
@@ -152,5 +160,11 @@ function update() {
 
   if (spaceBar.isDown) {
     punch.anims.play('punch', true);
+    punch.visible = true;
+  }
+
+  else {
+    punch.anims.pause();
+    punch.visible = false;
   }
 }
