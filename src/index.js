@@ -189,7 +189,6 @@ function update() {
   }
 
   punch.once('animationcomplete', ()=>{
-    console.log('animationcomplete')
     punch.anims.pause();
     punch.visible = false;
   });
