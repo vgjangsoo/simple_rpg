@@ -26,6 +26,7 @@ let cursors;
 let player;
 let punch;
 let spaceBar;
+let attactPosition = "attack-down"
 
 const game = new Phaser.Game(config);
 
@@ -150,11 +151,13 @@ function create() {
 }
 
 function update() {
+  
   if (cursors.up.isDown) {
     player.y += -4;
     punch.x = player.x;
     punch.y = player.y - 60;
     player.anims.play('up', true);
+    attactPosition = "attack-up"
   }
 
   else if (cursors.down.isDown) {
@@ -162,6 +165,7 @@ function update() {
     punch.x = player.x;
     punch.y = player.y + 60;
     player.anims.play('down', true);
+    attactPosition = "attack-down"
   }
 
   else if (cursors.left.isDown) {
@@ -169,6 +173,7 @@ function update() {
     punch.y = player.y;
     punch.x = player.x - 60;
     player.anims.play('left', true);
+    attactPosition = "attack-left"
   }
 
   else if (cursors.right.isDown) {
@@ -176,6 +181,7 @@ function update() {
     punch.y = player.y;
     punch.x = player.x + 60;
     player.anims.play('right', true);
+    attactPosition = "attack-right"
   }
 
   else {
@@ -184,6 +190,7 @@ function update() {
   }
 
   if (spaceBar.isDown) {
+    player.anims.play(attactPosition, true);
     punch.anims.play('punch', true);
     punch.visible = true;
   }
