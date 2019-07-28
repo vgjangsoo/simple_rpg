@@ -1,23 +1,27 @@
 import Phaser from "phaser";
 import logoImg from "./assets/logo.png";
 import mapTileset from "./assets/map-tileset.png";
+import oratio from "./assets/Oratio-the-Mercenary.png";
 
 const config = {
   type: Phaser.AUTO,
-  parent: "phaser-example",
   width: 1100,
   height: 800,
   scene: {
     preload: preload,
-    create: create
+    create: create,
+    update: update
   }
 };
+
+let cursors;
 
 const game = new Phaser.Game(config);
 
 function preload() {
   this.load.image("logo", logoImg);
   this.load.image("map-tiles", mapTileset);
+  this.load.spritesheet('oratio', oratio, { frameWidth: 73, frameHeight: 73 });
 }
 
 function create() {
@@ -51,6 +55,7 @@ function create() {
   ];
   const logo = this.add.image(550, 150, "logo");
   logo.depth = 1;
+
   const map = this.make.tilemap({data: level, tileWidth: 50, tilesHeight: 50});
   const tiles = map.addTilesetImage('map-tiles');
   const layer = map.createStaticLayer(0, tiles, 0, 0);
@@ -63,4 +68,43 @@ function create() {
     yoyo: true,
     loop: -1
   });
+
+  let player = this.add.sprite(200, 450, 'oratio');
+
+  this.anims.create({
+    key: 'down',
+    frames: this.anims.generateFrameNumbers('oratio', { start: 0, end: 2 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: 'left',
+    frames: this.anims.generateFrameNumbers('oratio', { start: 11, end: 13 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  this.anims.create({
+      key: 'right',
+      frames: this.anims.generateFrameNumbers('oratio', { start: 22, end: 24 }),
+      frameRate: 10,
+      repeat: -1
+  });
+
+  this.anims.create({
+    key: 'up',
+    frames: this.anims.generateFrameNumbers('oratio', { start: 33, end: 35 }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  cursors = this.input.keyboard.createCursorKeys();
+}
+
+function update() {
+  // if (cursors.left.isDown) {
+  //   player.setVelocityX(-160);
+  //   player.play('left', true);
+  // }
 }
