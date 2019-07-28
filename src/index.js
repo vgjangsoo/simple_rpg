@@ -183,16 +183,16 @@ function update() {
     player.anims.play('right', true);
     attactPosition = "attack-right"
   }
-
-  else {
-    player.setVelocity(0);
-    player.anims.pause();
-  }
-
-  if (spaceBar.isDown) {
+  
+  else if (spaceBar.isDown) {
     player.anims.play(attactPosition, true);
     punch.anims.play('punch', true);
     punch.visible = true;
+  }
+  
+  else {
+    player.setVelocity(0);
+    player.anims.pause();
   }
 
   punch.once('animationcomplete', ()=>{
