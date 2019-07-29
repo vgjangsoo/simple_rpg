@@ -12,7 +12,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: 0,
-      debug: false
+      debug: true
     }
   },
   scene: {
@@ -22,12 +22,8 @@ const config = {
   }
 };
 
-let cursors;
-let player;
-let punch;
-let spaceBar;
+let cursors, player, punch, spaceBar, enemy1;
 let attackPosition = "attack-down";
-let enemy1;
 const enemyStatus = ["enemy-up", "enemy-down", "enemy-left", "enemy-right"];
 
 const game = new Phaser.Game(config);
@@ -38,8 +34,8 @@ function randomNumber() {
 
 function preload() {
   this.load.image("map-tiles", mapTileset);
-  this.load.spritesheet("enemy1", orc, { frameWidth: 64, frameHeight: 64 });
   this.load.spritesheet("character", character, { frameWidth: 64, frameHeight: 64 });
+  this.load.spritesheet("enemy1", orc, { frameWidth: 64, frameHeight: 64 });
   this.load.spritesheet("attack", attack, { frameWidth: 192, frameHeight: 192 });
 }
 
@@ -81,8 +77,8 @@ function create() {
 
   // player
   player = this.physics.add.sprite(config.width / 2, config.height / 2, 'character').setFrame(134);
-  player.setScale(1.7);
-  player.setCollideWorldBounds(true);
+  player.setScale(1.7).setCollideWorldBounds(true);
+  player.body.setSize(30, 50).setOffset(17, 15);
 
   this.anims.create({
     key: 'up',
@@ -141,8 +137,8 @@ function create() {
   })
 
   // punch attack
-  punch = this.physics.add.sprite(player.x + 10, player.y + 50, 'attack');
-  punch.setScale(0.7);
+  punch = this.physics.add.sprite(player.x, player.y + 65, 'attack');
+  punch.setScale(0.5).setDepth(1);
   punch.visible = false;
   
   this.anims.create({
@@ -153,9 +149,9 @@ function create() {
   });
 
   // Enemy
-  enemy1 = this.physics.add.sprite(100, 100, "enemy1");
-  enemy1.setScale(1.7);
-  enemy1.setCollideWorldBounds(true);
+  enemy1 = this.physics.add.sprite(100, 100, "enemy1").setFrame(134);
+  enemy1.setScale(1.7).setCollideWorldBounds(true);
+  enemy1.body.setSize(30, 50).setOffset(17, 15);
 
   this.anims.create({
     key: 'enemy-up',
@@ -223,30 +219,37 @@ function create() {
     callback: moveEnemy,
     loop: true
   });
+
+  this.physics.world.enable([ player, enemy1 ]);
 }
 
 function update() {
+  const playerMoveSpeed = 150;
+  
   if (cursors.up.isDown) {
-    player.y += -4;
+    player.setVelocityY(-playerMoveSpeed);
+    player.setVelocityX(0);
     punch.x = player.x;
-    punch.y = player.y - 60;
+    punch.y = player.y - 40;
     player.anims.play('up', true);
     attackPosition = "attack-up";
     punch.visible = false;
   }
 
   else if (cursors.down.isDown) {
-    player.y += 4;
+    player.setVelocityY(playerMoveSpeed);
+    player.setVelocityX(0);
     punch.x = player.x;
-    punch.y = player.y + 60;
+    punch.y = player.y + 70;
     player.anims.play('down', true);
     attackPosition = "attack-down";
     punch.visible = false;
   }
 
   else if (cursors.left.isDown) {
-    player.x += -4;
-    punch.y = player.y;
+    player.setVelocityX(-playerMoveSpeed);
+    player.setVelocityY(0);
+    punch.y = player.y + 12.5;
     punch.x = player.x - 60;
     player.anims.play('left', true);
     attackPosition = "attack-left";
@@ -254,8 +257,9 @@ function update() {
   }
 
   else if (cursors.right.isDown) {
-    player.x += 4;
-    punch.y = player.y;
+    player.setVelocityX(playerMoveSpeed);
+    player.setVelocityY(0);
+    punch.y = player.y + 12.5;
     punch.x = player.x + 60;
     player.anims.play('right', true);
     attackPosition = "attack-right";
@@ -263,6 +267,7 @@ function update() {
   }
   
   else if (spaceBar.isDown) {
+    player.setVelocity(0);
     player.anims.play(attackPosition, true);
     punch.anims.play('punch', true);
     punch.visible = true;
@@ -277,13 +282,15 @@ function update() {
   punch.once('animation-complete', ()=>{
     punch.anims.pause();
   });
+  
+  this.physics.world.collide(player, enemy1);
 }
 
 // Enemy movement.
 function moveEnemy(){
-  let enemyMove = enemyStatus[randomNumber()]; 
-  let enemyMoveSpeed = 40;
-  
+  const enemyMove = enemyStatus[randomNumber()]; 
+  const enemyMoveSpeed = 40;
+
   if (enemyMove === "enemy-up") {
     enemy1.setVelocityY(-enemyMoveSpeed);
     enemy1.setVelocityX(0);
@@ -307,4 +314,5 @@ function moveEnemy(){
     enemy1.setVelocityY(0);
     enemy1.anims.play(enemyMove, true);
   }
+
 }
