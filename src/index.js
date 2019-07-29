@@ -28,6 +28,7 @@ let punch;
 let spaceBar;
 let attackPosition = "attack-down";
 let enemy1;
+let timer;
 const enemyStatus = ["enemy-up", "enemy-down", "enemy-left", "enemy-right"];
 
 const game = new Phaser.Game(config);
@@ -36,7 +37,7 @@ function randomNumber() {
   return Math.floor(Math.random() * 4);
 }
 
-console.log(randomNumber());
+/* console.log(randomNumber()); */
 
 function preload() {
   this.load.image("map-tiles", mapTileset);
@@ -163,28 +164,28 @@ function create() {
     key: 'enemy-up',
     frames: this.anims.generateFrameNumbers('enemy1', { frames: [104, 105, 106, 107, 108, 109, 110, 111, 112, 104] }),
     frameRate: 30,
-    repeat: 0
+    repeat: -1
   });
 
   this.anims.create({
     key: 'enemy-down',
     frames: this.anims.generateFrameNumbers('enemy1', { frames: [130, 131, 132, 133, 134, 135, 136, 137, 138, 130] }),
     frameRate: 30,
-    repeat: 0
+    repeat: -1
   });
 
   this.anims.create({
     key: 'enemy-left',
     frames: this.anims.generateFrameNumbers('enemy1', { frames: [117, 118, 119, 120, 121, 122, 123, 124, 125, 117] }),
     frameRate: 30,
-    repeat: 0
+    repeat: -1
   });
 
   this.anims.create({
       key: 'enemy-right',
       frames: this.anims.generateFrameNumbers('enemy1', { frames: [143, 144, 145, 146, 147, 148, 149, 150, 151, 143] }),
       frameRate: 30,
-      repeat: 0
+      repeat: -1
   });
 
   this.anims.create({
@@ -218,38 +219,22 @@ function create() {
   // Key input
   cursors = this.input.keyboard.createCursorKeys();
   spaceBar = this.input.keyboard.addKey('SPACE');
+  
+    let timer = this.time.addEvent({
+        delay: 1500,
+        callback: moveEnemy,
+        loop: true
+    });
 }
 
 function update() {
-  let enemyMove = enemyStatus[setInterval(randomNumber, 1000)]; 
-
-  if (enemyMove === "enemy-up") {
-    enemy1.y += -4;
-    enemy1.anims.play(enemyMove, true);
-  }
-
-  else if (enemyMove === "enemy-down") {
-    enemy1.y += 4;
-    enemy1.anims.play(enemyMove, true);
-  }
-
-  else if (enemyMove === "enemy-left") {
-    enemy1.x += -4;
-    enemy1.anims.play(enemyMove, true);
-  }
-
-  else if (enemyMove === "enemy-right") {
-    enemy1.x += 4;
-    enemy1.anims.play(enemyMove, true);
-  }
-  
-  
   if (cursors.up.isDown) {
     player.y += -4;
     punch.x = player.x;
     punch.y = player.y - 60;
     player.anims.play('up', true);
-    attackPosition = "attack-up"
+    attackPosition = "attack-up";
+    punch.visible = false;
   }
 
   else if (cursors.down.isDown) {
@@ -257,7 +242,8 @@ function update() {
     punch.x = player.x;
     punch.y = player.y + 60;
     player.anims.play('down', true);
-    attackPosition = "attack-down"
+    attackPosition = "attack-down";
+    punch.visible = false;
   }
 
   else if (cursors.left.isDown) {
@@ -265,7 +251,8 @@ function update() {
     punch.y = player.y;
     punch.x = player.x - 60;
     player.anims.play('left', true);
-    attackPosition = "attack-left"
+    attackPosition = "attack-left";
+    punch.visible = false;
   }
 
   else if (cursors.right.isDown) {
@@ -273,7 +260,8 @@ function update() {
     punch.y = player.y;
     punch.x = player.x + 60;
     player.anims.play('right', true);
-    attackPosition = "attack-right"
+    attackPosition = "attack-right";
+    punch.visible = false;
   }
   
   else if (spaceBar.isDown) {
@@ -285,10 +273,38 @@ function update() {
   else {
     player.setVelocity(0);
     player.anims.pause();
+    punch.visible = false;
   }
 
   punch.once('animation-complete', ()=>{
     punch.anims.pause();
-    punch.visible = false;
   });
+}
+
+function moveEnemy(){
+   let enemyMove = enemyStatus[randomNumber()]; 
+   let enemymovespeed = 40
+   if (enemyMove === "enemy-up") {
+    enemy1.setVelocityY(-enemymovespeed);
+    enemy1.setVelocityX(0);
+    enemy1.anims.play(enemyMove, true);
+  }
+
+  else if (enemyMove === "enemy-down") {
+    enemy1.setVelocityY(enemymovespeed);
+    enemy1.setVelocityX(0);
+    enemy1.anims.play(enemyMove, true);
+  }
+
+  else if (enemyMove === "enemy-left") {
+    enemy1.setVelocityX(-enemymovespeed);
+    enemy1.setVelocityY(0);
+    enemy1.anims.play(enemyMove, true);
+  }
+
+  else if (enemyMove === "enemy-right") {
+    enemy1.setVelocityX(enemymovespeed);
+    enemy1.setVelocityY(0);
+    enemy1.anims.play(enemyMove, true);
+  }
 }
