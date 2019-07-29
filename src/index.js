@@ -282,7 +282,8 @@ function update() {
 // Enemy movement.
 function moveEnemy(){
   let enemyMove = enemyStatus[randomNumber()]; 
-  let enemyMoveSpeed = 40
+  let enemyMoveSpeed = 40;
+  
   if (enemyMove === "enemy-up") {
     enemy1.setVelocityY(-enemyMoveSpeed);
     enemy1.setVelocityX(0);
