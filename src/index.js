@@ -36,8 +36,6 @@ function randomNumber() {
   return Math.floor(Math.random() * 4);
 }
 
-/* console.log(randomNumber()); */
-
 function preload() {
   this.load.image("map-tiles", mapTileset);
   this.load.spritesheet("enemy1", orc, { frameWidth: 64, frameHeight: 64 });
@@ -219,6 +217,7 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
   spaceBar = this.input.keyboard.addKey('SPACE');
   
+  // Timer to move enemies.
   let timer = this.time.addEvent({
     delay: 1500,
     callback: moveEnemy,
@@ -280,10 +279,11 @@ function update() {
   });
 }
 
+// Enemy movement.
 function moveEnemy(){
-   let enemyMove = enemyStatus[randomNumber()]; 
-   let enemyMoveSpeed = 40
-   if (enemyMove === "enemy-up") {
+  let enemyMove = enemyStatus[randomNumber()]; 
+  let enemyMoveSpeed = 40
+  if (enemyMove === "enemy-up") {
     enemy1.setVelocityY(-enemyMoveSpeed);
     enemy1.setVelocityX(0);
     enemy1.anims.play(enemyMove, true);
