@@ -28,7 +28,6 @@ let punch;
 let spaceBar;
 let attackPosition = "attack-down";
 let enemy1;
-let timer;
 const enemyStatus = ["enemy-up", "enemy-down", "enemy-left", "enemy-right"];
 
 const game = new Phaser.Game(config);
@@ -220,11 +219,11 @@ function create() {
   cursors = this.input.keyboard.createCursorKeys();
   spaceBar = this.input.keyboard.addKey('SPACE');
   
-    let timer = this.time.addEvent({
-        delay: 1500,
-        callback: moveEnemy,
-        loop: true
-    });
+  let timer = this.time.addEvent({
+    delay: 1500,
+    callback: moveEnemy,
+    loop: true
+  });
 }
 
 function update() {
@@ -283,27 +282,27 @@ function update() {
 
 function moveEnemy(){
    let enemyMove = enemyStatus[randomNumber()]; 
-   let enemymovespeed = 40
+   let enemyMoveSpeed = 40
    if (enemyMove === "enemy-up") {
-    enemy1.setVelocityY(-enemymovespeed);
+    enemy1.setVelocityY(-enemyMoveSpeed);
     enemy1.setVelocityX(0);
     enemy1.anims.play(enemyMove, true);
   }
 
   else if (enemyMove === "enemy-down") {
-    enemy1.setVelocityY(enemymovespeed);
+    enemy1.setVelocityY(enemyMoveSpeed);
     enemy1.setVelocityX(0);
     enemy1.anims.play(enemyMove, true);
   }
 
   else if (enemyMove === "enemy-left") {
-    enemy1.setVelocityX(-enemymovespeed);
+    enemy1.setVelocityX(-enemyMoveSpeed);
     enemy1.setVelocityY(0);
     enemy1.anims.play(enemyMove, true);
   }
 
   else if (enemyMove === "enemy-right") {
-    enemy1.setVelocityX(enemymovespeed);
+    enemy1.setVelocityX(enemyMoveSpeed);
     enemy1.setVelocityY(0);
     enemy1.anims.play(enemyMove, true);
   }
